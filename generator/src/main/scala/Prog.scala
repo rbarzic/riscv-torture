@@ -404,7 +404,7 @@ class Prog(memsize: Int, veccfg: Map[String,String], loop : Boolean)
     "\n" +
     (if (using_vec) "RVTEST_RV64UV\n"
      else if (using_fpu) "RVTEST_RV64UF\n"
-     else "RVTEST_RV64U\n") +
+     else "RVTEST_RV32U\n") +
     "RVTEST_CODE_BEGIN\n" +
     (if (using_vec) init_vector() else "") + 
     "\n" +
