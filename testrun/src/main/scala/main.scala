@@ -18,7 +18,7 @@ case class Options(var testAsmName: Option[String] = None,
   var seekOutFailure: Boolean = false,
   var output: Boolean = false,
   var dumpWaveform: Boolean = false,
-  var confFileName: String = "config/default.config")
+  var confFileName: String = "config/nanorv32IM.config")
 
 abstract sealed class Result
 case object Failed extends Result

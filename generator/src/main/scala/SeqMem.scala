@@ -51,7 +51,7 @@ class SeqMem(xregs: HWRegPool, mem: Mem, use_amo: Boolean) extends InstSeq
 
        def getRandOpAndAddr (dw_addr: Int, is_store: Boolean): (Opcode, Int) =
        {
-          val typ = AccessType.values.toIndexedSeq(rand_range(0,6))
+          val typ = AccessType.values.toIndexedSeq(rand_range(0,4))
           if (is_store)
           {
              if      (typ == byte  || typ ==ubyte)  (SB, dw_addr + rand_addr_b(8))
@@ -110,13 +110,10 @@ class SeqMem(xregs: HWRegPool, mem: Mem, use_amo: Boolean) extends InstSeq
   candidates += seq_load_addrfn(LH, rand_addr_h)
   candidates += seq_load_addrfn(LHU, rand_addr_h)
   candidates += seq_load_addrfn(LW, rand_addr_w)
-  candidates += seq_load_addrfn(LWU, rand_addr_w)
-  candidates += seq_load_addrfn(LD, rand_addr_d)
 
   candidates += seq_store_addrfn(SB, rand_addr_b)
   candidates += seq_store_addrfn(SH, rand_addr_h)
   candidates += seq_store_addrfn(SW, rand_addr_w)
-  candidates += seq_store_addrfn(SD, rand_addr_d)
 
   if (use_amo) 
   {
