@@ -60,7 +60,7 @@ class SeqALU(xregs: HWRegPool, use_mul: Boolean, use_div: Boolean) extends InstS
 
   candidates += seq_immfn(LUI, rand_bigimm)
   candidates += seq_src1_immfn(ADDI, rand_imm)
-  candidates += seq_src1_immfn(SLLI, rand_shamt) 
+  candidates += seq_src1_immfn(SLLI, rand_shamt)
   candidates += seq_src1_immfn(SLTI, rand_imm)
   candidates += seq_src1_immfn(SLTIU, rand_imm)
   candidates += seq_src1_immfn(XORI, rand_imm)

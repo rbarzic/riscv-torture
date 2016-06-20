@@ -72,12 +72,12 @@ object Generator extends App
     SeqVec.cnt = 0
     val s = prog.generate(nseqs, fprnd, mix, veccfg, use_amo, use_mul, use_div, segment, loop, loop_size)
 
-    val oname = "output/" + outFileName + ".S"
+    val oname = "../../nanorv32-ik/tests/imported/riscv-tests/isa/rv32ui/" + outFileName + ".S"
     val fw = new FileWriter(oname)
     fw.write(s)
     fw.close()
     val stats = prog.statistics(nseqs,fprnd,mix,vnseq,vmemsize,vfnum,vecmix,use_amo,use_mul,use_div)
-    val sname = "output/" + outFileName + ".stats"
+    val sname = "../../nanorv32-ik/tests/imported/riscv-tests/isa/rv32ui/" + outFileName + ".stats"
     val fw2 = new FileWriter(sname)
     fw2.write(stats)
     fw2.close()

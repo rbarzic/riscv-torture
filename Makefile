@@ -1,13 +1,13 @@
 # Convenience Makefile
 
 SBT ?= java -Xmx1G -Xss8M -XX:MaxPermSize=128M -jar sbt-launch.jar
-RTL_CONFIG := DefaultConfig
+RTL_CONFIG := --sim=icarus output/test.S
 C_SIM := ../emulator/emulator-Top-$(RTL_CONFIG)
-R_SIM := ../vsim/simv-Top-$(RTL_CONFIG)
+R_SIM := ../../nanorv32-ik/sim/runtest.py
 TEST := output/test.S
 OPTIONS := $(empty)
 SUITE := output
-CONFIG := config/default.config
+CONFIG := config/nanorv32IM.config
 COMMIT := none
 empty :=
 space := $(empty) $(empty)
@@ -73,3 +73,5 @@ rnight:
 crnight:
 	$(SBT) 'overnight/run -c $(C_SIM) -r $(R_SIM) -g $(COMMIT) $(OPTIONS)'
 
+nanorv32test:
+	bash test.sh
