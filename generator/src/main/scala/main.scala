@@ -30,7 +30,7 @@ object Generator extends App
   def generate_loop(confFile: String, outFileName: String, numOutFiles: Int) = { 
     if (numOutFiles > 0) { 
       for (i <- 0 to (numOutFiles-1)) 
-        generate(confFile, outFileName + ("_%03d" format (i))) 
+        generate(confFile, outFileName + ("%d" format (i))) 
     } else { 
       generate(confFile, outFileName) 
     } 
@@ -72,12 +72,12 @@ object Generator extends App
     SeqVec.cnt = 0
     val s = prog.generate(nseqs, fprnd, mix, veccfg, use_amo, use_mul, use_div, segment, loop, loop_size)
 
-    val oname = "../../nanorv32-ik/tests/imported/riscv-tests/isa/rv32ui/" + outFileName + ".S"
+    val oname = "output/" + outFileName + ".S"
     val fw = new FileWriter(oname)
     fw.write(s)
     fw.close()
     val stats = prog.statistics(nseqs,fprnd,mix,vnseq,vmemsize,vfnum,vecmix,use_amo,use_mul,use_div)
-    val sname = "../../nanorv32-ik/tests/imported/riscv-tests/isa/rv32ui/" + outFileName + ".stats"
+    val sname = "output/" + outFileName + ".stats"
     val fw2 = new FileWriter(sname)
     fw2.write(stats)
     fw2.close()
