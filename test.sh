@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TESTRUNS=20
+TESTRUNS=250
 SIMPATH=~/olsk/nanorv32-ik/sim
 OUTPUTFILE=../../../nanorv32-ik/tests/torture/test #Path and name
 TESTFILESPATH=../tests/torture
