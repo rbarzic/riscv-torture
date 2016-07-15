@@ -18,8 +18,23 @@ object Rand
   def rand_shamt() = rand_range(0, 31)
   def rand_shamtw() = rand_range(0, 31)
   def rand_seglen() = rand_range(0, 7)
+
   def rand_imm() = rand_range(-2048, 2047)
+/*  {	
+    if (rvc_bias) {
+      if (rand_range(0,1) > 0) {
+      	rand_range(-2048, 2047)
+      } else {
+      	rand_range(-32, 31) // 50% chance of getting within compressed range 	
+      }
+    } else {
+      rand_range(-2048, 2047)
+    }
+  }
+*/  
   def rand_bigimm() = rand_range(0, 1048575)
+  def rand_imm_c() = rand_range(-32, 31) // Find out at which range RVC instructions are used C.ADDI has 6 bit imm
+  def rand_bigimm_c() = rand_range(0, 255) // saw some instr type had 8 bit imm? only C.ADDI4SPN it seems
 
   def rand_addr_b(memsize: Int) = rand_range(0, memsize-1)
   def rand_addr_h(memsize: Int) = rand_range(0, memsize-1) & ~1
