@@ -30,6 +30,7 @@ class Inst(opcode: String, val operands: Array[Operand])
     if (is_vmem) return "vmem"
     if (is_vamo) return "vamo"
     if (is_vmisc) return "vmisc"
+    if (is_rvc) return "rvc"
     return "unknown" //Shouldn't return this.
   }
 
@@ -118,6 +119,11 @@ class Inst(opcode: String, val operands: Array[Operand])
 
   def is_vmisc = List("vsetcfg", "vstop", "vsetvl", "veidx", "vf",
     "vmcs", "vmca", "fence").contains(opcode)
+
+  def is_rvc = List("c.addi", "c.andi", "c.slli", "c.srli", "c.srai",
+    "c.add", "c.sub", "c.xor", "c.or", "c.and", "c.lui", "c.li", "c.mv",
+    "c.j", "c.jal", "c.jr", "c.jalr", "c.beqz", "c.bnez", "c.addi16sp",
+    "c.addi4spn", "c.lwsp", "c.ldsp", "c.lqsp","c.lw", "c.ld", "c.lq").contains(opcode)
 
   override def toString =
   {
@@ -531,5 +537,39 @@ object FMOVZ extends Opcode("fmovz")
 object FMOVN extends Opcode("fmovn")
 
 object FENCE_V extends Opcode("fence")
+
+// Compressed instructions 
+object C_ADDI extends Opcode("c.addi") // ok
+object C_ANDI extends Opcode("c.andi")
+object C_SLLI extends Opcode("c.slli") // ok
+object C_SRLI extends Opcode("c.srli")
+object C_SRAI extends Opcode("c.srai")
+object C_ADD extends Opcode("c.add")   // ok
+object C_SUB extends Opcode("c.sub")
+object C_XOR extends Opcode("c.xor")
+object C_OR extends Opcode("c.or")
+object C_AND extends Opcode("c.and")
+object C_LUI extends Opcode("c.lui")   // ok
+object C_LI extends Opcode("c.li")     // ok
+
+object C_MV extends Opcode("c.mv")     // ok
+
+object C_J extends Opcode("c.j")
+object C_JAL extends Opcode("c.jal")
+object C_JR extends Opcode("c.jr")
+object C_JALR extends Opcode("c.jalr")
+object C_BEQZ extends Opcode("c.beqz")
+object C_BNEZ extends Opcode("c.bnez")
+
+object C_ADDI16SP extends Opcode("c.addi16sp")
+object C_ADDI4SPN extends Opcode("c.addi4spn")
+
+object C_LWSP extends Opcode("c.lwsp")
+object C_LDSP extends Opcode("c.ldsp")
+object C_LQSP extends Opcode("c.lqsp")
+object C_LW extends Opcode("c.lw")
+object C_LD extends Opcode("c.ld")
+object C_LQ extends Opcode("c.lq")
+
 
 object ILLEGAL extends Opcode(".word")

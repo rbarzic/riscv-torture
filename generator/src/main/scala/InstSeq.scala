@@ -65,6 +65,11 @@ class HWRegAllocator
   def reg_write_hidden(hwrp: HWRegPool) = { reg_fn(hwrp, filter_write_hidden, alloc_write(false), free_write) }
   def reg_write(hwrp: HWRegPool, regs: Reg*) = { reg_fn(hwrp, filter_write_dep(regs.toList), alloc_write_dep(regs.toList), free_write) }
   def reg_write_other(hwrp: HWRegPool, other: Reg, regs: Reg*) = { reg_fn(hwrp, filter_write_dep_other(other, regs.toList), alloc_write_dep(regs.toList), free_write) }
+  // Custom
+  def reg_read_any_not_x0(hwrp: HWRegPool) = { reg_fn(hwrp, filter_read_any_not_x0, alloc_read, free_read) }
+  def reg_read_8_pop(hwrp: HWRegPool) = { reg_fn(hwrp, filter_read_8_pop, alloc_read, free_read) }
+  def reg_write_visible_not_x2(hwrp: HWRegPool) = { reg_fn(hwrp, filter_write_visible_not_x2, alloc_write(true), free_write) }
+  def reg_write_visible_8_pop(hwrp: HWRegPool) = { reg_fn(hwrp, filter_write_visible_8_pop, alloc_write(true), free_write) }
 
   def allocate_regs(): Boolean =
   {

@@ -10,7 +10,7 @@ object HWRegState extends Enumeration
 }
 
 import HWRegState._
-class HWReg(val name: String, val readable: Boolean, val writable: Boolean)
+class HWReg(val name: String, var readable: Boolean, var writable: Boolean)
 {
   var state = VIS
   var readers = 0
@@ -37,6 +37,10 @@ class HWReg(val name: String, val readable: Boolean, val writable: Boolean)
     state = backup_state
     readers = backup_readers
   }
+
+  def set_readable(bool: Boolean) = readable = bool
+
+  def set_writable(bool: Boolean) = writable = bool
 }
 
 object HWReg
@@ -61,6 +65,11 @@ object HWReg
     if (regs.forall(_.hwreg.is_visible)) filter_write_visible_other(other) _
     else filter_write_hidden_other(other) _
   }
+  // Custom filters
+  def filter_read_any_not_x0 = (hwreg: HWReg) => (hwreg.readable && hwreg.name != "x0")
+  def filter_read_8_pop = (hwreg: HWReg) => (hwreg.readable && hwreg.name.matches("x8|x9|x10|x11|x12|x13|x14|x15")) // correct?
+  def filter_write_visible_not_x2 = (hwreg: HWReg) => (filter_write_visible(hwreg) && hwreg.name != "x2")
+  def filter_write_visible_8_pop = (hwreg: HWReg) => (filter_write_visible(hwreg) && hwreg.name.matches("x8|x9|x10|x11|x12|x13|x14|x15")) //correct?
 
   def alloc_read = (hwreg: HWReg) => hwreg.readers += 1
   def alloc_write(visible: Boolean)(hwreg: HWReg) =

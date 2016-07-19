@@ -16,6 +16,7 @@ object Rand
   }
 
   def rand_shamt() = rand_range(0, 31)
+  def rand_shamt_c() = rand_range(1, 31) // shift amount must be non-zero
   def rand_shamtw() = rand_range(0, 31)
   def rand_seglen() = rand_range(0, 7)
 
@@ -34,6 +35,13 @@ object Rand
 */  
   def rand_bigimm() = rand_range(0, 1048575)
   def rand_imm_c() = rand_range(-32, 31) // Find out at which range RVC instructions are used C.ADDI has 6 bit imm
+  def rand_nzimm_c(): Int  =
+  {
+    var tmp = rand_range(-32, 30)
+    if (tmp >= 0) tmp += 1
+    tmp
+  }
+  def rand_immu_c() = rand_range(1, 31)
   def rand_bigimm_c() = rand_range(0, 255) // saw some instr type had 8 bit imm? only C.ADDI4SPN it seems
 
   def rand_addr_b(memsize: Int) = rand_range(0, memsize-1)
