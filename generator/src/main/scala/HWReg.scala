@@ -10,7 +10,7 @@ object HWRegState extends Enumeration
 }
 
 import HWRegState._
-class HWReg(val name: String, var readable: Boolean, var writable: Boolean)
+class HWReg(val name: String, val readable: Boolean, val writable: Boolean)
 {
   var state = VIS
   var readers = 0
@@ -38,9 +38,9 @@ class HWReg(val name: String, var readable: Boolean, var writable: Boolean)
     readers = backup_readers
   }
 
-  def set_readable(bool: Boolean) = readable = bool
+  //def set_readable(bool: Boolean) = readable = bool
 
-  def set_writable(bool: Boolean) = writable = bool
+  //def set_writable(bool: Boolean) = writable = bool
 }
 
 object HWReg

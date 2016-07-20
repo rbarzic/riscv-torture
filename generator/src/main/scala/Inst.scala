@@ -123,7 +123,7 @@ class Inst(opcode: String, val operands: Array[Operand])
   def is_rvc = List("c.addi", "c.andi", "c.slli", "c.srli", "c.srai",
     "c.add", "c.sub", "c.xor", "c.or", "c.and", "c.lui", "c.li", "c.mv",
     "c.j", "c.jal", "c.jr", "c.jalr", "c.beqz", "c.bnez", "c.addi16sp",
-    "c.addi4spn", "c.lwsp", "c.ldsp", "c.lqsp","c.lw", "c.ld", "c.lq").contains(opcode)
+    "c.addi4spn", "c.lw", "c.lwsp", "c.sw", "c.swsp").contains(opcode)
 
   override def toString =
   {
@@ -538,7 +538,7 @@ object FMOVN extends Opcode("fmovn")
 
 object FENCE_V extends Opcode("fence")
 
-// Compressed instructions 
+// Compressed instructions rvc32
 object C_ADDI extends Opcode("c.addi") // ok
 object C_ANDI extends Opcode("c.andi")
 object C_SLLI extends Opcode("c.slli") // ok
@@ -554,6 +554,9 @@ object C_LI extends Opcode("c.li")     // ok
 
 object C_MV extends Opcode("c.mv")     // ok
 
+object C_ADDI16SP extends Opcode("c.addi16sp")
+object C_ADDI4SPN extends Opcode("c.addi4spn")
+
 object C_J extends Opcode("c.j")
 object C_JAL extends Opcode("c.jal")
 object C_JR extends Opcode("c.jr")
@@ -561,15 +564,9 @@ object C_JALR extends Opcode("c.jalr")
 object C_BEQZ extends Opcode("c.beqz")
 object C_BNEZ extends Opcode("c.bnez")
 
-object C_ADDI16SP extends Opcode("c.addi16sp")
-object C_ADDI4SPN extends Opcode("c.addi4spn")
-
-object C_LWSP extends Opcode("c.lwsp")
-object C_LDSP extends Opcode("c.ldsp")
-object C_LQSP extends Opcode("c.lqsp")
 object C_LW extends Opcode("c.lw")
-object C_LD extends Opcode("c.ld")
-object C_LQ extends Opcode("c.lq")
-
+object C_LWSP extends Opcode("c.lwsp")
+object C_SW extends Opcode("c.sw")
+object C_SWSP extends Opcode("c.swsp")
 
 object ILLEGAL extends Opcode(".word")
