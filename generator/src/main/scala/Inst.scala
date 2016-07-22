@@ -540,22 +540,22 @@ object FENCE_V extends Opcode("fence")
 
 // Compressed instructions rvc32
 object C_ADDI extends Opcode("c.addi") // ok
-object C_ANDI extends Opcode("c.andi")
+object C_ANDI extends Opcode("c.andi") // ok, but had to use nzimm
 object C_SLLI extends Opcode("c.slli") // ok
-object C_SRLI extends Opcode("c.srli")
-object C_SRAI extends Opcode("c.srai")
+object C_SRLI extends Opcode("c.srli") // ok
+object C_SRAI extends Opcode("c.srai") // ok
 object C_ADD extends Opcode("c.add")   // ok
-object C_SUB extends Opcode("c.sub")
-object C_XOR extends Opcode("c.xor")
-object C_OR extends Opcode("c.or")
-object C_AND extends Opcode("c.and")
+object C_SUB extends Opcode("c.sub")   // ok
+object C_XOR extends Opcode("c.xor")   // ok 
+object C_OR extends Opcode("c.or")     // ok
+object C_AND extends Opcode("c.and")   // ok
 object C_LUI extends Opcode("c.lui")   // ok
 object C_LI extends Opcode("c.li")     // ok
 
 object C_MV extends Opcode("c.mv")     // ok
 
-object C_ADDI16SP extends Opcode("c.addi16sp")
-object C_ADDI4SPN extends Opcode("c.addi4spn")
+object C_ADDI16SP extends Opcode("c.addi16sp") // ok
+object C_ADDI4SPN extends Opcode("c.addi4spn") // ok
 
 object C_J extends Opcode("c.j")
 object C_JAL extends Opcode("c.jal")
@@ -564,9 +564,9 @@ object C_JALR extends Opcode("c.jalr")
 object C_BEQZ extends Opcode("c.beqz")
 object C_BNEZ extends Opcode("c.bnez")
 
-object C_LW extends Opcode("c.lw")
-object C_LWSP extends Opcode("c.lwsp")
-object C_SW extends Opcode("c.sw")
-object C_SWSP extends Opcode("c.swsp")
+object C_LW extends Opcode("c.lw")	// ok
+object C_LWSP extends Opcode("c.lwsp")  // ok
+object C_SW extends Opcode("c.sw") 	// ok
+object C_SWSP extends Opcode("c.swsp")	// ok
 
 object ILLEGAL extends Opcode(".word")

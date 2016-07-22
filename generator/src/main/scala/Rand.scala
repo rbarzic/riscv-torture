@@ -41,9 +41,19 @@ object Rand
     if (tmp >= 0) tmp += 1
     tmp
   }
+  def rand_nzimm_c_scale16(): Int  =
+  {
+    var tmp = rand_range(-32, 30)
+    if (tmp >= 0) tmp += 1
+    tmp*16
+  }  
   def rand_immu_c() = rand_range(1, 31)
-  def rand_bigimm_c() = rand_range(0, 255) // saw some instr type had 8 bit imm? only C.ADDI4SPN it seems
-
+  def rand_zimmu_c() = rand_range(0, 63)
+  def rand_zimmu_c_scale4() = rand_range(0, 63)*4
+  def rand_zimmu5_c_scale4() = rand_range(0, 31)*4
+  def rand_bigimm_c() = rand_range(1, 255) // saw some instr type had 8 bit imm? only C.ADDI4SPN it seems
+  def rand_bigimm_c_scale4() = rand_range(1, 255)*4
+  
   def rand_addr_b(memsize: Int) = rand_range(0, memsize-1)
   def rand_addr_h(memsize: Int) = rand_range(0, memsize-1) & ~1
   def rand_addr_w(memsize: Int) = rand_range(0, memsize-1) & ~3

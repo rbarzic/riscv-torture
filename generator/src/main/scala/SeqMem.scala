@@ -3,7 +3,7 @@ package torture
 import scala.collection.mutable.ArrayBuffer
 import Rand._
 
-class SeqMem(xregs: HWRegPool, mem: Mem, use_amo: Boolean) extends InstSeq
+class SeqMem(xregs: HWRegPool, mem: Mem, use_amo: Boolean, rvc: Boolean, rvc_bias: Boolean) extends InstSeq
 {
   override val seqname = "xmem"
   def seq_load_addrfn(op: Opcode, addrfn: (Int) => Int) = () =>
@@ -17,12 +17,56 @@ class SeqMem(xregs: HWRegPool, mem: Mem, use_amo: Boolean) extends InstSeq
     insts += op(reg_dest, RegImm(reg_addr, imm))
   }
 
+  def seq_load_addrfn_c8(op: Opcode, addrfn: (Int) => Int, immfn: () => Int) = () =>
+  {
+    val reg_addr = reg_write_hidden_c8(xregs)
+    val reg_dest = reg_write_visible_c8(xregs)
+    val addr = addrfn(mem.size)
+    val imm = immfn() // rand_imm()
+
+    insts += LA(reg_addr, BaseImm(mem.toString, addr-imm))
+    insts += op(reg_dest, RegImm(reg_addr, imm))
+  }
+
+  def seq_load_addrfn_sp(op: Opcode, addrfn: (Int) => Int, immfn: () => Int) = () =>
+  {
+    val reg_addr = reg_write_hidden_x2(xregs)
+    val reg_dest = reg_write_visible(xregs)
+    val addr = addrfn(mem.size)
+    val imm = immfn()
+
+    insts += LA(reg_addr, BaseImm(mem.toString, addr-imm))
+    insts += op(reg_dest, RegImm(reg_addr, imm))
+  }
+
   def seq_store_addrfn(op: Opcode, addrfn: (Int) => Int) = () =>
   {
     val reg_addr = reg_write_hidden(xregs)
     val reg_src = reg_read_visible(xregs)
     val addr = addrfn(mem.size)
     val imm = rand_imm()
+
+    insts += LA(reg_addr, BaseImm(mem.toString, addr-imm))
+    insts += op(reg_src, RegImm(reg_addr, imm))
+  }
+
+  def seq_store_addrfn_c8(op: Opcode, addrfn: (Int) => Int, immfn: () => Int) = () =>
+  {
+    val reg_addr = reg_write_hidden_c8(xregs)
+    val reg_src = reg_read_visible_c8(xregs)
+    val addr = addrfn(mem.size)
+    val imm = immfn() // rand_imm()
+
+    insts += LA(reg_addr, BaseImm(mem.toString, addr-imm))
+    insts += op(reg_src, RegImm(reg_addr, imm))
+  }
+
+  def seq_store_addrfn_sp(op: Opcode, addrfn: (Int) => Int, immfn: () => Int) = () =>
+  {
+    val reg_addr = reg_write_hidden_x2(xregs)
+    val reg_src = reg_read_visible(xregs)
+    val addr = addrfn(mem.size)
+    val imm = immfn()
 
     insts += LA(reg_addr, BaseImm(mem.toString, addr-imm))
     insts += op(reg_src, RegImm(reg_addr, imm))
@@ -114,7 +158,16 @@ class SeqMem(xregs: HWRegPool, mem: Mem, use_amo: Boolean) extends InstSeq
   candidates += seq_store_addrfn(SB, rand_addr_b)
   candidates += seq_store_addrfn(SH, rand_addr_h)
   candidates += seq_store_addrfn(SW, rand_addr_w)
+  
+  if (rvc)
+  {
+    candidates += seq_load_addrfn_c8(C_LW, rand_addr_w, rand_zimmu5_c_scale4)
+    candidates += seq_load_addrfn_sp(C_LWSP, rand_addr_w, rand_zimmu_c_scale4)
 
+    candidates += seq_store_addrfn_c8(C_SW, rand_addr_w, rand_zimmu5_c_scale4)
+    candidates += seq_store_addrfn_sp(C_SWSP, rand_addr_w, rand_zimmu_c_scale4)
+  }
+  
   if (use_amo) 
   {
     candidates += seq_amo_addrfn(AMOADD_W, rand_addr_w)

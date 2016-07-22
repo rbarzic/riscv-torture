@@ -319,7 +319,7 @@ class Prog(memsize: Int, veccfg: Map[String,String], loop : Boolean)
   def code_body(seqnum: Int, mix: Map[String, Int], veccfg: Map[String, String], use_amo: Boolean, use_mul: Boolean, use_div: Boolean, segment: Boolean, rvc: Boolean, rvc_bias: Boolean) =
   {
     val name_to_seq = Map(
-      "xmem" -> (() => new SeqMem(xregs, core_memory, use_amo)),
+      "xmem" -> (() => new SeqMem(xregs, core_memory, use_amo, rvc, rvc_bias)),
       "xbranch" -> (() => new SeqBranch(xregs)),
       "xalu" -> (() => new SeqALU(xregs, use_mul, use_div, rvc, rvc_bias)), //true means use_divider, TODO: make better
       "fgen" -> (() => new SeqFPU(fregs_s, fregs_d)),

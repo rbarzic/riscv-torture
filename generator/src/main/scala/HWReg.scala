@@ -67,9 +67,18 @@ object HWReg
   }
   // Custom filters
   def filter_read_any_not_x0 = (hwreg: HWReg) => (hwreg.readable && hwreg.name != "x0")
-  def filter_read_8_pop = (hwreg: HWReg) => (hwreg.readable && hwreg.name.matches("x8|x9|x10|x11|x12|x13|x14|x15")) // correct?
+  def filter_read_any_c8 = (hwreg: HWReg) => (hwreg.readable && hwreg.name.matches("x8|x9|x10|x11|x12|x13|x14|x15"))
+  def filter_read_visible_c8 = (hwreg: HWReg) => (filter_read_visible(hwreg) && hwreg.name.matches("x8|x9|x10|x11|x12|x13|x14|x15"))
   def filter_write_visible_not_x2 = (hwreg: HWReg) => (filter_write_visible(hwreg) && hwreg.name != "x2")
-  def filter_write_visible_8_pop = (hwreg: HWReg) => (filter_write_visible(hwreg) && hwreg.name.matches("x8|x9|x10|x11|x12|x13|x14|x15")) //correct?
+  def filter_write_visible_x2 = (hwreg: HWReg) => (filter_write_visible(hwreg) && hwreg.name == "x2")
+  def filter_write_hidden_x2 = (hwreg: HWReg) => (filter_write_hidden(hwreg) && hwreg.name == "x2")
+  def filter_write_visible_c8 = (hwreg: HWReg) => (filter_write_visible(hwreg) && hwreg.name.matches("x8|x9|x10|x11|x12|x13|x14|x15"))
+  def filter_write_hidden_c8 = (hwreg: HWReg) => (filter_write_hidden(hwreg) && hwreg.name.matches("x8|x9|x10|x11|x12|x13|x14|x15"))
+  def filter_write_dep_c8(regs: List[Reg]) =
+  {
+    if (regs.forall(_.hwreg.is_visible)) filter_write_visible_c8
+    else filter_write_hidden_c8
+  }
 
   def alloc_read = (hwreg: HWReg) => hwreg.readers += 1
   def alloc_write(visible: Boolean)(hwreg: HWReg) =

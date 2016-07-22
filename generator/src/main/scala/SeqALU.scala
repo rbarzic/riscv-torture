@@ -13,9 +13,31 @@ class SeqALU(xregs: HWRegPool, use_mul: Boolean, use_div: Boolean, rvc: Boolean,
     insts += op(dest, imm)
   }
   
-  def seq_immfn_c(op: Opcode, immfn: () => Int) = () =>
+  def seq_immfn_not_x2(op: Opcode, immfn: () => Int) = () =>
   {
     val dest = reg_write_visible_not_x2(xregs)
+    val imm = Imm(immfn())
+    insts += op(dest, imm)
+  }
+
+  def seq_immfn_x2(op: Opcode, immfn: () => Int) = () =>
+  {
+    val dest = reg_write_visible_x2(xregs)
+    val imm = Imm(immfn())
+    insts += op(dest, imm)
+  }
+
+  def seq_immfn_srcx2(op: Opcode, immfn: () => Int) = () =>
+  {
+    val src = reg_write_hidden_x2(xregs)
+    val dest = reg_write_visible_c8(xregs)
+    val imm = Imm(immfn())
+    insts += op(dest, src, imm)
+  }
+
+  def seq_immfn_c8(op: Opcode, immfn: () => Int) = () =>
+  {
+    val dest = reg_write_visible_c8(xregs)
     val imm = Imm(immfn())
     insts += op(dest, imm)
   }
@@ -84,6 +106,13 @@ class SeqALU(xregs: HWRegPool, use_mul: Boolean, use_div: Boolean, rvc: Boolean,
     insts += op(dest, src1)
   }
 
+  def seq_dest1_c8(op: Opcode) = () =>
+  {
+    val src1 = reg_read_any_c8(xregs)
+    val dest = reg_write_c8(xregs, src1)
+    insts += op(dest, src1)
+  }
+
   def seq_dest2_c(op: Opcode) = () =>
   {
     val src1 = reg_read_any(xregs)
@@ -121,24 +150,24 @@ class SeqALU(xregs: HWRegPool, use_mul: Boolean, use_div: Boolean, rvc: Boolean,
 
   if (rvc)
   {
-    candidates += seq_immfn_c(C_LUI, rand_immu_c) 
-    candidates += seq_immfn(C_LI, rand_nzimm_c)
+    candidates += seq_immfn_not_x2(C_LUI, rand_immu_c) 
+    candidates += seq_immfn(C_LI, rand_nzimm_c) // Change back to only seq_immfn when pysim and rtl allows sp as dest
     candidates += seq_immfn(C_ADDI, rand_nzimm_c)
     candidates += seq_immfn(C_SLLI, rand_shamt_c)
-    /*
-    candidates += seq_custom_sec(C_ANDI, rand_nzimm_c) // fix use new filter and check rand function
-    candidates += seq_custom_sec(C_SRLI, rand_nzimm_c) // fix
-    candidates += seq_custom_sec(C_SRAI, rand_nzimm_c) // fix
-    candidates += seq_custom_sec(C_SUB, rand_nzimm_c) // fix
-    candidates += seq_custom_sec(C_XOR, rand_nzimm_c) // fix
-    candidates += seq_custom_sec(C_OR, rand_nzimm_c) // fix
-    candidates += seq_custom_sec(C_AND, rand_nzimm_c) // fix
-
-    candidates += seq_custom_sec(C_ADDI16SP, rand_nzimm_c) // fix
-    candidates += seq_custom_sec(C_ADDI4SPN, rand_nzimm_c) // fix    
-    */
+    
+    candidates += seq_immfn_c8(C_ANDI, rand_nzimm_c) // Does not say it should be non zero in ISA, but get illegal operand error
+    candidates += seq_immfn_c8(C_SRLI, rand_shamt_c)
+    candidates += seq_immfn_c8(C_SRAI, rand_shamt_c)
+    candidates += seq_dest1_c8(C_SUB)
+    candidates += seq_dest1_c8(C_XOR)
+    candidates += seq_dest1_c8(C_OR)
+    candidates += seq_dest1_c8(C_AND)
+    
+    candidates += seq_immfn_x2(C_ADDI16SP, rand_nzimm_c_scale16) // got illegal operand error
+    candidates += seq_immfn_srcx2(C_ADDI4SPN, rand_bigimm_c_scale4) // got illegal operand error
+    
     candidates += seq_dest1_c(C_MV)
-    candidates += seq_dest1_c(C_ADD)    
+    candidates += seq_dest1_c(C_ADD)
 
     /*
     val oplist_c = new ArrayBuffer[Opcode]
