@@ -8,7 +8,7 @@ import java.util.Properties
 import scala.collection.JavaConversions._
 
 case class Options(var outFileName: String = "test",
-  var confFileName: String = "config/nanorv32IM.config", var numOutFiles: Int = 0)
+  var confFileName: String = "config/default.config", var numOutFiles: Int = 0)
 
 object Generator extends App
 {

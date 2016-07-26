@@ -3,7 +3,7 @@ package torture
 import scala.collection.mutable.ArrayBuffer
 import Rand._
 
-class SeqBranch(xregs: HWRegPool) extends InstSeq
+class SeqBranch(xregs: HWRegPool, rvc: Boolean, rvc_bias: Boolean) extends InstSeq
 {
   override val seqname = "xbranch"
   val taken = Label("__needs_branch_patch")
@@ -105,18 +105,51 @@ class SeqBranch(xregs: HWRegPool) extends InstSeq
     (reg_dst1, reg_dst2)
   }
 
-  def seq_taken_j() = () =>
+  // Custom
+  def helper_two_srcs_onex0_diffreg_any() = () =>
   {
-    insts += J(taken)
+    val reg_dst = reg_write_visible_c8(xregs)
+    val reg_src_zero = reg_read_zero(xregs)
+    insts += ADDI(reg_dst, reg_read_any(xregs), Imm(0))
+    (reg_dst, reg_src_zero)
   }
 
-  def seq_taken_jal() = () =>
+  def helper_two_srcs_onex0_diffreg_pos() = () =>
+  {
+    val reg_dst = reg_write_visible_c8(xregs)
+    val reg_src_zero = reg_read_zero(xregs)
+    insts += ADDI(reg_dst, reg_read_zero(xregs), Imm(rand_filter(rand_imm, (x) => x > 0)))
+    (reg_dst, reg_src_zero)
+  }
+
+  def helper_two_srcs_onex0_diffreg_neg() = () =>
+  {
+    val reg_dst = reg_write_visible_c8(xregs)
+    val reg_src_zero = reg_read_zero(xregs)
+    insts += ADDI(reg_dst, reg_read_zero(xregs), Imm(rand_filter(rand_imm, (x) => x < 0)))
+    (reg_dst, reg_src_zero)
+  }
+
+  def helper_two_srcs_onex0_diffreg_zero() = () =>
+  {
+    val reg_dst = reg_write_visible_c8(xregs)
+    val reg_src_zero = reg_read_zero(xregs)
+    insts += ADDI(reg_dst, reg_read_zero(xregs), Imm(0))
+    (reg_dst, reg_src_zero)
+  }
+
+  def seq_taken_j(op: Opcode) = () =>
+  {
+    insts += op(taken)
+  }
+
+  def seq_taken_jal(op: Opcode) = () =>
   {
     val reg_x1 = reg_write_ra(xregs)
-    insts += JAL(taken)
+    insts += op(taken)
   }
 
-  def seq_taken_jalr() = () =>
+  def seq_taken_jalr(op: Opcode) = () =>
   {
     val reg_x1 = reg_write_ra(xregs)
     val reg_src1 = reg_read_zero(xregs)
@@ -124,7 +157,7 @@ class SeqBranch(xregs: HWRegPool) extends InstSeq
     val reg_dst2 = reg_write_hidden(xregs)
 
     insts += LA(reg_dst1, Label("__needs_jalr_patch1"))
-    insts += JALR(reg_dst2, reg_dst1, Label("__needs_jalr_patch2"))
+    insts += op(reg_dst2, reg_dst1, Label("__needs_jalr_patch2"))
   }
 
   def get_two_regs_and_branch_with_label( op: Opcode, helper: () => (Operand, Operand), label: Label, flip_ops:Boolean = false) = () =>
@@ -191,9 +224,35 @@ class SeqBranch(xregs: HWRegPool) extends InstSeq
 
   val candidates = new ArrayBuffer[() => insts.type]
 
-  candidates += seq_taken_j()
-  candidates += seq_taken_jal()
-  candidates += seq_taken_jalr()
+  candidates += seq_taken_j(J)
+  candidates += seq_taken_jal(JAL)
+  candidates += seq_taken_jalr(JALR)
+
+/*
+  if (rvc) 
+  {
+    candidates += seq_taken_j(C_J)
+    candidates += seq_taken_jal(C_JAL)
+    candidates += seq_taken_jal(C_JR)
+    candidates += seq_taken_jalr(C_JALR)
+  }
+*/
+
+  if (rvc_bias || rvc)
+  {
+    val rvc_biased_tests = List(
+      // (BEQ, helper_two_srcs_onex0_diffreg_any, nottaken), // C_BEQZ not guaranteed (cant be sure neq)
+      (BEQ, helper_two_srcs_onex0_diffreg_pos, nottaken), // C_BEQZ	|
+      (BEQ, helper_two_srcs_onex0_diffreg_neg, nottaken), // C_BEQZ	|
+      (BEQ, helper_two_srcs_onex0_diffreg_zero, taken),   // C_BEQZ	|
+      //(BNE, helper_two_srcs_onex0_diffreg_any, taken),    // C_BNEZ	| (cant be sure eq)
+      (BNE, helper_two_srcs_onex0_diffreg_pos, taken),    // C_BNEZ	|
+      (BNE, helper_two_srcs_onex0_diffreg_neg, taken),    // C_BNEZ	|
+      (BNE, helper_two_srcs_onex0_diffreg_zero, nottaken) // C_BNEZ	|
+    )
+    rvc_biased_tests.foreach( t => candidates += get_two_regs_and_branch_with_label(t._1, t._2, t._3, false))
+  }
+
 
   reversible_tests.foreach( t => candidates += get_two_regs_and_branch_with_label(t._1, t._2, t._3, false))
   chiral_tests.foreach( t => candidates += get_two_regs_and_branch_with_label(t._1, t._2, t._3, false))

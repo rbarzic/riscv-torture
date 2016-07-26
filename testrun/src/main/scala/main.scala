@@ -148,12 +148,12 @@ object TestRunner extends App
       println("Virtual mode")
       val entropy = (new Random()).nextLong()
       println("entropy: " + entropy)
-      process = "riscv32-unknown-elf-gcc -nostdlib -nostartfiles -Wa,-march=RV32IC -DENTROPY=" + entropy + " -std=gnu99 -O2 -I./env/v -T./env/v/link.ld ./env/v/entry.S ./env/v/vm.c " + asmFileName + " -lc -o " + binFileName
+      process = "riscv32-unknown-elf-gcc -nostdlib -nostartfiles -Wa,-march=RV32IMC -DENTROPY=" + entropy + " -std=gnu99 -O2 -I./env/v -T./env/v/link.ld ./env/v/entry.S ./env/v/vm.c " + asmFileName + " -lc -o " + binFileName
     }
     else
     {
       println("Physical mode")
-      process = "riscv32-unknown-elf-gcc -nostdlib -nostartfiles -Wa,-march=RV32IC -I./env/p -T./env/p/link.ld " + asmFileName + " -o " + binFileName
+      process = "riscv32-unknown-elf-gcc -nostdlib -nostartfiles -Wa,-march=RV32IMC -I./env/p -T./env/p/link.ld " + asmFileName + " -o " + binFileName
     }
     val pb = Process(process)
     val exitCode = pb.!

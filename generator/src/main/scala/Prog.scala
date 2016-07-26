@@ -320,7 +320,7 @@ class Prog(memsize: Int, veccfg: Map[String,String], loop : Boolean)
   {
     val name_to_seq = Map(
       "xmem" -> (() => new SeqMem(xregs, core_memory, use_amo, rvc, rvc_bias)),
-      "xbranch" -> (() => new SeqBranch(xregs)),
+      "xbranch" -> (() => new SeqBranch(xregs, rvc, rvc_bias)),
       "xalu" -> (() => new SeqALU(xregs, use_mul, use_div, rvc, rvc_bias)), //true means use_divider, TODO: make better
       "fgen" -> (() => new SeqFPU(fregs_s, fregs_d)),
       "fpmem" -> (() => new SeqFPMem(xregs, fregs_s, fregs_d, core_memory)),

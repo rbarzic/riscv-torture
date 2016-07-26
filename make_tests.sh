@@ -2,6 +2,7 @@
 
 #TESTRUNS=5
 OUTPUTFILE=../../tmp_tests/test #Path and name
+CONFIGFILE=config/nanorv32IM.config
 
 #Generate test
-java -Xmx1G -Xss8M -XX:MaxPermSize=128M -jar sbt-launch.jar "generator/run -C config/nanorv32IM.config -o $OUTPUTFILE -n $1"
+java -Xmx1G -Xss8M -XX:MaxPermSize=128M -jar sbt-launch.jar "generator/run -C $CONFIGFILE -o $OUTPUTFILE -n $1"
