@@ -93,6 +93,7 @@ if __name__ =='__main__':
                 os.makedirs('testrun-'+timestamp)
             os.makedirs('testrun-'+timestamp+'/test'+str(i))
             shutil.copy(tmp_tests+'test'+str(i)+'.S', 'testrun-'+timestamp+'/test'+str(i))
+            shutil.copy(tmp_tests+'test'+str(i)+'.dis', 'testrun-'+timestamp+'/test'+str(i))
             shutil.copy(tmp_tests+'signature'+str(i)+'.log', 'testrun-'+timestamp+'/test'+str(i))
             shutil.copy(tmp_tests+'signature'+str(i)+'.rtl.log', 'testrun-'+timestamp+'/test'+str(i))
             shutil.copy(tmp_tests+'trace'+str(i)+'.log', 'testrun-'+timestamp+'/test'+str(i))
