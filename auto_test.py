@@ -35,7 +35,7 @@ def start_runtest(sim_type, index, timeout, args):
         
     p_sim = subprocess.Popen(cmd, cwd=runtest, preexec_fn=os.setsid)
     try:
-        p_sim.communicate(timeout)
+        p_sim.communicate(timeout=timeout)
     except subprocess.TimeoutExpired:
         os.killpg(os.getpgid(p_sim.pid), signal.SIGTERM) # Terminate process group spawned by runtest
         print('Process was killed because it used too long time to finish. \nPlease make sure all processes were properly killed.')
@@ -52,6 +52,8 @@ def get_args():
                         help='path for signature files', default=None) # Not used
     parser.add_argument('-n', '--nruns', action='store', dest='nruns',
                         help='number of runs/tests to be tested', default='1')
+    parser.add_argument('-r', '--retest', action='store_true', dest='retest',
+                        help='test again files that are already in tmp_tests folder', default=None) # Need to provide n?
     parser.add_argument('--rvc', action='store_true', dest='rvc',                        
                         help='enable rvc option in runtest', default=False) # Not used yet
     parser.add_argument('--clean', action='store_true', dest='clean',                    
@@ -61,7 +63,8 @@ def get_args():
 if __name__ =='__main__':
     args = get_args()
     signatures_match = True
-    p_make = subprocess.Popen(['./make_tests.sh', args.nruns], cwd=torture).wait() # Need timeout on this?
+    if not args.retest:
+        p_make = subprocess.Popen(['./make_tests.sh', args.nruns], cwd=torture).wait() # Need timeout on this?
     
     i = 0
     while i < int(args.nruns):

@@ -167,6 +167,15 @@ class SeqMem(xregs: HWRegPool, mem: Mem, use_amo: Boolean, rvc: Boolean, rvc_bia
     candidates += seq_store_addrfn_c8(C_SW, rand_addr_w, rand_zimmu5_c_scale4)
     candidates += seq_store_addrfn_sp(C_SWSP, rand_addr_w, rand_zimmu_c_scale4)
   }
+
+  if (rvc_bias)
+  {
+    candidates += seq_load_addrfn_c8(LW, rand_addr_w, rand_zimmu5_c_scale4)
+    candidates += seq_load_addrfn_sp(LW, rand_addr_w, rand_zimmu_c_scale4) //mby comment out?
+
+    candidates += seq_store_addrfn_c8(SW, rand_addr_w, rand_zimmu5_c_scale4)
+    candidates += seq_store_addrfn_sp(SW, rand_addr_w, rand_zimmu_c_scale4)
+  }
   
   if (use_amo) 
   {

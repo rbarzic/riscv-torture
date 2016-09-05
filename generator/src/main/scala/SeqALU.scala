@@ -69,8 +69,17 @@ class SeqALU(xregs: HWRegPool, use_mul: Boolean, use_div: Boolean, rvc: Boolean,
     val src1 = reg_read_any(xregs)
     val dest = reg_write(xregs, src1)
     val tmp = reg_write_visible(xregs)
-    insts += ADDI(tmp, reg_read_zero(xregs), Imm(immfn())) // fjerna rand_imm() her
+    insts += ADDI(tmp, reg_read_zero(xregs), Imm(immfn()))
     insts += op(dest, tmp, tmp)
+  }
+
+  def seq_src1_zero_c8(op: Opcode, immfn: () => Int) = () => // ???
+  {
+    val src1 = reg_read_any_c8(xregs)
+    val dest = reg_write_c8(xregs, src1)
+    val tmp = reg_write_visible_c8(xregs)
+    insts +=  ADDI(tmp, tmp, Imm(immfn()))// ADDI(tmp, reg_read_zero(xregs), Imm(immfn()))
+    insts += op(dest, dest, tmp)
   }
 
   def seq_src2(op: Opcode) = () =>
@@ -95,6 +104,13 @@ class SeqALU(xregs: HWRegPool, use_mul: Boolean, use_div: Boolean, rvc: Boolean,
   def seq_dest2_immfn_c(op: Opcode, immfn: () => Int) = () => // instr sequence that better fits compressed instructions
   {
     val dest = reg_write_visible(xregs)
+    val imm = Imm(immfn())
+    insts += op(dest, dest, imm)
+  }
+
+  def seq_dest2_immfn_c8(op: Opcode, immfn: () => Int) = () => // instr sequence that better fits compressed instructions
+  {
+    val dest = reg_write_visible_c8(xregs)
     val imm = Imm(immfn())
     insts += op(dest, dest, imm)
   }
@@ -145,7 +161,6 @@ class SeqALU(xregs: HWRegPool, use_mul: Boolean, use_div: Boolean, rvc: Boolean,
     candidates += seq_src1_zero(op, rand_imm_c)
     candidates += seq_src2(op)
     candidates += seq_src2_zero(op, rand_imm_c)
-    candidates += seq_dest2_c(op)
   }
 
   if (rvc)
@@ -181,11 +196,25 @@ class SeqALU(xregs: HWRegPool, use_mul: Boolean, use_div: Boolean, rvc: Boolean,
   if (rvc_bias)
   {
     candidates += seq_immfn(LUI, rand_immu_c)		 // compressed coverage
-    candidates += seq_dest2_immfn_c(ADDI, rand_nzimm_c)	 // compressed coverage
-    candidates += seq_dest2_immfn_c(SLLI, rand_shamt_c)	 // compressed coverage 
-    candidates += seq_dest2_immfn_c(SRLI, rand_shamt_c)	 // compressed only x8-x15 but increases chance <- made a filter for these registers
-    candidates += seq_dest2_immfn_c(SRAI, rand_shamt_c)	 // compressed only x8-x15 but increases chance
-    candidates += seq_dest2_immfn_c(ANDI, rand_imm_c)	 // compressed only x8-x15 but increases chance
+    candidates += seq_dest2_immfn_c(ADDI, rand_nzimm_c)	 // 	    ''
+    candidates += seq_dest2_immfn_c(SLLI, rand_shamt_c)	 //  	    ''
+    candidates += seq_dest2_immfn_c8(SRLI, rand_shamt_c) // compressed coverage should only pick x8-x15 now
+    candidates += seq_dest2_immfn_c8(SRAI, rand_shamt_c) // 	    ''
+    candidates += seq_dest2_immfn_c8(ANDI, rand_imm_c)	 // 	    ''
+    candidates += seq_dest2_c(ADD)
+    
+    val oplist_bias = new ArrayBuffer[Opcode]
+    oplist_bias += (SUB, XOR, OR, AND)
+    /*
+    for (op <- oplist_bias) // mby make onf
+    {
+      candidates += seq_dest1_c8(op)
+      
+      candidates += seq_src1_zero(op, rand_imm_c) // _c8
+      candidates += seq_src2_zero(op, rand_imm_c) // _c8
+      candidates += seq_dest2_c(op)   		  // _c8
+    }
+    */
   }
 
   rand_pick(candidates)()
