@@ -2,3 +2,4 @@
 output/test*
 output/failedtests
 *target/
+/output/tmp_tests/
